@@ -1,0 +1,3 @@
+secret: secret
+privateKeyLocation: /Users/lujiaxin/GolandProjects/gin_realworld/private.pem
+publicKeyLocation: /Users/lujiaxin/GolandProjects/gin_realworld/public.pem
