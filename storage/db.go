@@ -5,8 +5,16 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var DB *sqlx.DB
+var db *sqlx.DB
 
-func init(database *sqlx.DB){
-	db = sqlx.Open("mysql", ":memory:")
+func init() {
+	dsn := "root:12345678@tcp(127.0.0.1:3306)/gin_realworld_db"
+	db, err := sqlx.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
 }

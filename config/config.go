@@ -7,8 +7,8 @@ import (
 )
 
 type config struct {
-	Secret string
-	PublicKeyLocation string
+	Secret             string
+	PublicKeyLocation  string
 	PrivateKeyLocation string
 }
 
@@ -22,14 +22,14 @@ func init() {
 	if err != nil {
 		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
-	if err := viper.Unmarshal(&_config); err != nil{
+	if err := viper.Unmarshal(&_config); err != nil {
 		panic(err)
 	}
 
 	fmt.Println(viper.Get("secret"))
 }
 
-func GetSecret() string{
+func GetSecret() string {
 	return _config.Secret
 }
 
