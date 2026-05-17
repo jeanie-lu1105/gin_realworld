@@ -3,11 +3,14 @@ package storage
 import (
 	"context"
 
+	"example.com/gin_realworld/logger"
 	"example.com/gin_realworld/models"
 )
 
 func CreateUser(ctx context.Context, user *models.User) error {
+	log := logger.New(ctx)
 	_, err := db.ExecContext(ctx, "inset user(username, password, emial, image, bio) values (?,?,?,?,?)", user.Username, user.Password, user.Email, user.Image, user.Bio)
+	log.Infof("create user in db but error ", err)
 	return err
 }
 

@@ -34,7 +34,7 @@ func userRegistration(ctx *gin.Context) {
 
 	defaultUserImage := "https://api.realworld.io/images/smiley-cyrus.jpeg"
 	hashPassword, err := security.HashPassword(body.User.Password)
-	log.WithField("hash", hashPassword).WithError(err).Errorf("user registration failed")
+	log.WithField("hash", hashPassword).WithError(err).Errorf("user registration failed for hash password")
 	if err != nil {
 		log.WithError(err).Errorf("hash password failed")
 		ctx.AbortWithStatus(http.StatusInternalServerError)
