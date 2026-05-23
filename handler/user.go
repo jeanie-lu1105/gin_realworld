@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"example.com/gin_realworld/logger"
-	"example.com/gin_realworld/middlewares"
 	"example.com/gin_realworld/models"
 	"example.com/gin_realworld/params/request"
 	"example.com/gin_realworld/params/response"
@@ -19,27 +18,29 @@ func AddUserHandler(r *gin.Engine) {
 	usersGroup.POST("", userRegistration)
 	usersGroup.POST("/login", userLogin)
 	r.GET("/api/profiles/:username", userProfile)
-	r.Use(middlewares.AuthMiddleware).PUT("/api/user", editUser)
+	//r.Use(middlewares.AuthMiddleware).PUT("/api/user", editUser)
 }
 
 func userRegistration(ctx *gin.Context) {
 	log := logger.New(ctx)
 	var body request.UserRegistrationRequest
-	if err := ctx.ShouldBindBodyWithJSON(&body); err != nil {
-		log.WithError(err).Errorf("user registration bind json failed")
+	if err := ctx.ShouldBindJSON(&body); err != nil {
+		log.WithError(err).Errorln("bind json failed")
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+
 	log.WithField("user", utils.JsonMarshal(body)).Infof("user registration called")
 
 	defaultUserImage := "https://api.realworld.io/images/smiley-cyrus.jpeg"
+
 	hashPassword, err := security.HashPassword(body.User.Password)
-	log.WithField("hash", hashPassword).WithError(err).Errorf("user registration failed for hash password")
 	if err != nil {
 		log.WithError(err).Errorf("hash password failed")
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+
 	if err := storage.CreateUser(ctx, &models.User{
 		Username: body.User.Username,
 		Password: hashPassword,
@@ -53,20 +54,20 @@ func userRegistration(ctx *gin.Context) {
 	}
 
 	token, err := security.GenerateJWT(body.User.Username, body.User.Email)
-
 	if err != nil {
 		log.WithError(err).Errorln("generate jwt failed")
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, response.UserAuthenticationResponse{User: response.UserAuthenticationBody{
-		Email:    body.User.Email,
-		Token:    token,
-		Username: body.User.Username,
-		Bio:      "",
-		Image:    "https://api.realworld.io/images/smiley-curus.jpg",
-	}})
+	ctx.JSON(http.StatusOK, response.UserAuthenticationResponse{
+		User: response.UserAuthenticationBody{
+			Email:    body.User.Email,
+			Token:    token,
+			Username: body.User.Username,
+			Bio:      "",
+			Image:    defaultUserImage,
+		}})
 	return
 }
 
@@ -81,6 +82,7 @@ func userLogin(ctx *gin.Context) {
 	log.WithField("user", utils.JsonMarshal(body)).Infof("user login called")
 
 	dbUser, err := storage.GetUserByEmail(ctx, body.User.Email)
+	log.Infof("db user info %s\n", utils.JsonMarshal(dbUser))
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return

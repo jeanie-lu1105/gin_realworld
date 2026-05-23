@@ -2,21 +2,23 @@ package storage
 
 import (
 	"context"
+	"fmt"
 
-	"example.com/gin_realworld/logger"
 	"example.com/gin_realworld/models"
+	"example.com/gin_realworld/utils"
 )
 
 func CreateUser(ctx context.Context, user *models.User) error {
-	log := logger.New(ctx)
-	_, err := db.ExecContext(ctx, "inset user(username, password, emial, image, bio) values (?,?,?,?,?)", user.Username, user.Password, user.Email, user.Image, user.Bio)
-	log.Infof("create user in db but error ", err)
+	fmt.Printf("create user called 12 %v\n", utils.JsonMarshal(user))
+	_, err := db.ExecContext(ctx, `insert into user(username, password, email, image, bio) values(?,?,?,?,?)`, user.Username, user.Password, user.Email, user.Image, user.Bio)
 	return err
+
 }
 
 func GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	var user models.User
-	err := db.GetContext(ctx, &user, "select * from user where email = ?", email)
+	fmt.Printf("get user info %s\n", email)
+	err := db.GetContext(ctx, &user, "select username, password, email, image, bio from user where email = ?", email)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +27,7 @@ func GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 
 func GetUserByUsername(ctx context.Context, username string) (*models.User, error) {
 	var user models.User
-	err := db.GetContext(ctx, &user, "select * from user where username = ?", username)
+	err := db.GetContext(ctx, &user, "select username, password, email, image, bio from user where username = ?", username)
 	if err != nil {
 		return nil, err
 	}

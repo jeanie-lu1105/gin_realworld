@@ -11,11 +11,9 @@ const salt = "sadfxcvzcxv"
 
 func HashPassword(password string) (string, error) {
 	password += salt
-	bcryptedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
-	if err != nil {
-		return "", err
-	}
-	fmt.Print("hash password error place ", err)
+	fmt.Printf("password is %s\n", password)
+	bcryptedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	fmt.Printf("password %s\n", base64.StdEncoding.EncodeToString(bcryptedPassword))
 	return base64.StdEncoding.EncodeToString(bcryptedPassword), nil
 }
 

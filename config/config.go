@@ -25,8 +25,6 @@ func init() {
 	if err := viper.Unmarshal(&_config); err != nil {
 		panic(err)
 	}
-
-	fmt.Println(viper.Get("secret"))
 }
 
 func GetSecret() string {

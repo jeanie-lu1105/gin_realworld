@@ -10,8 +10,8 @@ import (
 
 func TestCreateAndGetUser(t *testing.T) {
 	ctx := context.Background()
-	userName := "lujiaxinTest"
-	email := "lujiaxin1@test.com"
+	userName := "lujiaxin123123"
+	email := "xxxx1231231@gmail.com"
 
 	err := CreateUser(ctx, &models.User{
 		Username: userName,
@@ -20,36 +20,23 @@ func TestCreateAndGetUser(t *testing.T) {
 		Image:    "xxxx123",
 		Bio:      "xxxx123",
 	})
-
 	if err != nil {
-		t.Errorf("CreateUser err: %v", err)
-		return
-	}
-
-	err = CreateUser(ctx, &models.User{
-		Username: "lujiaxin_test",
-		Password: "xxxx1234",
-		Email:    "lujiaxin_test@test.com",
-		Image:    "xxxx123",
-		Bio:      "xxxx123",
-	})
-
-	if err != nil {
-		t.Errorf("CreateUser err: %v", err)
+		t.Errorf("create user failed, err: %v", err)
 		return
 	}
 
 	dbUser, err := GetUserByEmail(ctx, email)
 	if err != nil {
-		t.Errorf("GetUserByEmail err: %v", err)
+		t.Errorf("get user by email failed, err: %v", err)
 		return
 	}
 
-	t.Logf("dbUser: %v", utils.JsonMarshal(dbUser))
+	t.Logf("get user: %v\n", utils.JsonMarshal(dbUser))
 
 	err = DeleteUserByEmail(ctx, email)
 	if err != nil {
-		t.Errorf("DeleteUserByEmail err: %v", err)
+		t.Errorf("delete user by email failed")
 		return
 	}
+
 }

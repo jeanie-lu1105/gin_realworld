@@ -6,7 +6,8 @@ import (
 )
 
 func RunHTTPServer() {
-  r := gin.Default()
-  handler.AddUserHandler(r)
-  r.Run() 
+	r := gin.Default()
+	handler.AddUserHandler(r)
+	handler.AddArticlesHandler(r)
+	r.Run()
 }
