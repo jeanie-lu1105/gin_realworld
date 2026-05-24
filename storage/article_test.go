@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"example.com/gin_realworld/models"
+	"example.com/gin_realworld/params/request"
+	"example.com/gin_realworld/utils"
 )
 
 var data = `[
@@ -4379,4 +4381,15 @@ func TestDataImport(t *testing.T) {
 			continue
 		}
 	}
+}
+
+func TestListArticles(t *testing.T) {
+	ctx := context.TODO()
+	articles, err := ListArticles(ctx, &request.ListArticleQuery{Limit: 10, Offset: 0})
+	if err != nil {
+		t.Fatal(err)
+		return
+	}
+
+	t.Logf("articles: %v\n", utils.JsonMarshal(articles))
 }

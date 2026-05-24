@@ -9,5 +9,6 @@ func RunHTTPServer() {
 	r := gin.Default()
 	handler.AddUserHandler(r)
 	handler.AddArticlesHandler(r)
+	handler.AddTagsHandler(r)
 	r.Run()
 }
