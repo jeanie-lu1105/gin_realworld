@@ -34,3 +34,7 @@ func init() {
 		panic(err)
 	}
 }
+
+func IsNotFound(err error) bool {
+	return err == gorm.ErrRecordNotFound
+}

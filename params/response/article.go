@@ -48,3 +48,10 @@ func (a *Article) FromDB(dbArticle *models.Article) {
 	a.CreatedAt = dbArticle.CreatedAt
 	a.UpdatedAt = dbArticle.UpdatedAt
 }
+
+type Author struct {
+	Bio       string `json:"bio"`
+	Following bool   `json:"following"`
+	Image     string `json:"image"`
+	Username  string `json:"username"`
+}
