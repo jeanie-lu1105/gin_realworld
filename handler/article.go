@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"example.com/gin_realworld/logger"
+	"example.com/gin_realworld/middlewares"
 	"example.com/gin_realworld/models"
 	"example.com/gin_realworld/params/request"
 	"example.com/gin_realworld/params/response"
@@ -18,7 +19,7 @@ func AddArticlesHandler(r *gin.Engine) {
 	articlesGroup := r.Group("/api/articles")
 	articlesGroup.GET("", listArticles)
 	articlesGroup.GET("/:slug", getArticle)
-	//articlesGroup.Use(middlewares.AuthMiddleware)
+	articlesGroup.Use(middlewares.AuthMiddlewareCookie)
 	articlesGroup.POST("", createArticles)
 	articlesGroup.PUT("/:slug", editArticles)
 	articlesGroup.DELETE("/:slug", deleteArticles)

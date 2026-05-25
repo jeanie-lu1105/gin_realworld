@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"example.com/gin_realworld/logger"
+	"example.com/gin_realworld/middlewares"
 	"example.com/gin_realworld/models"
 	"example.com/gin_realworld/params/response"
 	"example.com/gin_realworld/security"
@@ -12,10 +13,10 @@ import (
 	"github.com/spf13/cast"
 )
 
-func addArticleCommentHandler(r *gin.Engine) {
+func AddArticleCommentHandler(r *gin.Engine) {
 	commentsGroup := r.Group("/api/articles/:slug/comments")
 	commentsGroup.GET("", getArticleComments)
-	//commentsGroup.Use(middlewares.AuthMiddleware)
+	commentsGroup.Use(middlewares.AuthMiddlewareCookie)
 	commentsGroup.POST("", createArticleComment)
 	commentsGroup.DELETE("/:commentId", deleteArticleComment)
 }

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"example.com/gin_realworld/logger"
+	"example.com/gin_realworld/middlewares"
 	"example.com/gin_realworld/models"
 	"example.com/gin_realworld/params/request"
 	"example.com/gin_realworld/params/response"
@@ -17,8 +18,9 @@ func AddUserHandler(r *gin.Engine) {
 	usersGroup := r.Group("/api/users")
 	usersGroup.POST("", userRegistration)
 	usersGroup.POST("/login", userLogin)
+	usersGroup.POST("/user-image", uploadUserImage)
 	r.GET("/api/profiles/:username", userProfile)
-	//r.Use(middlewares.AuthMiddleware).PUT("/api/user", editUser)
+	r.Use(middlewares.AuthMiddlewareCookie).PUT("/api/user", editUser)
 }
 
 func userRegistration(ctx *gin.Context) {
@@ -59,6 +61,8 @@ func userRegistration(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+
+	ctx.SetCookie("token", token, 24*3600, "/", "localhost:8080", false, false)
 
 	ctx.JSON(http.StatusOK, response.UserAuthenticationResponse{
 		User: response.UserAuthenticationBody{
@@ -178,4 +182,14 @@ func editUser(ctx *gin.Context) {
 			Image:    dbUser.Image,
 		}})
 	}
+}
+
+func uploadUserImage(ctx *gin.Context) {
+	file, _ := ctx.FormFile("file")
+	err := ctx.SaveUploadedFile(file, "./"+file.Filename)
+	if err != nil {
+		ctx.Status(http.StatusInternalServerError)
+		return
+	}
+	ctx.Status(http.StatusOK)
 }
