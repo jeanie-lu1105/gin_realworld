@@ -31,7 +31,7 @@ func AuthMiddlewareCookie(ctx *gin.Context) {
 	}
 
 	token = strings.TrimPrefix(token, "Token ")
-	log.Infof("token is %s\n", token)
+	token = strings.TrimPrefix(token, "Bearer ")
 	claims, ok, err := security.VerifyJWT(token)
 	if err != nil || !ok {
 		log.WithError(err).Info("Error verifying JWT")

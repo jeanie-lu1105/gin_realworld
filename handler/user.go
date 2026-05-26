@@ -2,7 +2,9 @@ package handler
 
 import (
 	"net/http"
+	"time"
 
+	"example.com/gin_realworld/cache"
 	"example.com/gin_realworld/logger"
 	"example.com/gin_realworld/middlewares"
 	"example.com/gin_realworld/models"
@@ -11,6 +13,7 @@ import (
 	"example.com/gin_realworld/security"
 	"example.com/gin_realworld/storage"
 	"example.com/gin_realworld/utils"
+	"github.com/bsm/redislock"
 	"github.com/gin-gonic/gin"
 )
 
@@ -123,6 +126,12 @@ func userProfile(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+
+	if err := cache.SetUserProfile(ctx, security.GetCurrentUsername(ctx), user, 300); err != nil {
+		log.WithError(err).Errorln("set user profile failed")
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 	ctx.JSON(http.StatusOK, response.UserProfileResponse{
 		UserProfile: response.UserProfile{Username: user.Username,
 			Bio: user.Bio, Image: user.Image, Following: false},
@@ -132,6 +141,25 @@ func userProfile(ctx *gin.Context) {
 func editUser(ctx *gin.Context) {
 	log := logger.New(ctx)
 	log.Infof("edit user: %v", security.GetCurrentUsername(ctx))
+
+	lock, err := cache.Locker.Obtain(ctx, cache.UserEditProfileLockKey(security.
+		GetCurrentUsername(ctx)), 30*time.Second, &redislock.Options{
+		RetryStrategy: redislock.ExponentialBackoff(100*time.Millisecond, 2*time.Second),
+	})
+
+	if err == redislock.ErrNotObtained {
+		log.WithError(err).Errorln("user is editing" + security.GetCurrentUsername(ctx))
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	} else if err != nil {
+		log.WithError(err).Errorln("obtain lock failed")
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	defer lock.Release(ctx)
+
+	time.Sleep(5 * time.Second)
+
 	var body request.EditUserRequest
 	if err := ctx.BindJSON(&body); err != nil {
 		log.WithError(err).Errorf("edit user bind json failed")
@@ -164,6 +192,12 @@ func editUser(ctx *gin.Context) {
 		if err := storage.UpdateUserByUsername(ctx, security.GetCurrentUsername(ctx), dbUser); err != nil {
 			log.WithError(err).Errorln("update user failed")
 			ctx.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+
+		if err := cache.DeleteUserProfile(ctx, security.GetCurrentUsername(ctx)); err != nil {
+			log.WithError(err).Errorln("delete user profile failed")
+			ctx.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
 

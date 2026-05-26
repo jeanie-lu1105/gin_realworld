@@ -2,12 +2,10 @@ package security
 
 import (
 	"crypto/rsa"
-	"fmt"
 	"os"
 	"time"
 
 	"example.com/gin_realworld/config"
-	"example.com/gin_realworld/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -60,7 +58,6 @@ func VerifyJWT(token string) (*jwt.MapClaims, bool, error) {
 	claims, err := jwt.ParseWithClaims(token, &claim, func(token *jwt.Token) (interface{}, error) {
 		return []byte(config.GetSecret()), nil
 	})
-	fmt.Printf("verify jwt claims %s\n", utils.JsonMarshal(claims))
 	if err != nil {
 		return nil, false, err
 	}

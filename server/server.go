@@ -27,6 +27,8 @@ func RunHTTPServer() {
 	handler.AddArticlesHandler(r)
 	handler.AddTagsHandler(r)
 	handler.AddArticleCommentHandler(r)
+	handler.AddSSE(r)
+	handler.AddWebsocket(r)
 	r.Static("/images", "./images")
 	r.Run()
 }

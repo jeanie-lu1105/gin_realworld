@@ -10,6 +10,7 @@ type config struct {
 	Secret             string
 	PublicKeyLocation  string
 	PrivateKeyLocation string
+	RedisAddr          string
 }
 
 var _config config
@@ -37,4 +38,8 @@ func GetPrivateKeyLocation() string {
 
 func GetPublicKeyLocation() string {
 	return _config.PublicKeyLocation
+}
+
+func GetRedisAddr() string {
+	return _config.RedisAddr
 }
