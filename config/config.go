@@ -2,6 +2,8 @@ package config
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/spf13/viper"
 )
@@ -11,14 +13,17 @@ type config struct {
 	PublicKeyLocation  string
 	PrivateKeyLocation string
 	RedisAddr          string
+	MySQLDSN           string `mapstructure:"mysqlDSN"`
 }
 
 var _config config
 
 func init() {
+
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("/Users/lujiaxin/GolandProjects/gin_realworld/")
+	currentPath, _ := os.Getwd()
+	viper.AddConfigPath(currentPath)
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(fmt.Errorf("fatal error config file: %w", err))
@@ -33,13 +38,19 @@ func GetSecret() string {
 }
 
 func GetPrivateKeyLocation() string {
-	return _config.PrivateKeyLocation
+	currentPath, _ := os.Getwd()
+	return filepath.Join(currentPath, _config.PrivateKeyLocation)
 }
 
 func GetPublicKeyLocation() string {
-	return _config.PublicKeyLocation
+	currentPath, _ := os.Getwd()
+	return filepath.Join(currentPath, _config.PublicKeyLocation)
 }
 
 func GetRedisAddr() string {
 	return _config.RedisAddr
+}
+
+func GetMySQLDSN() string {
+	return _config.MySQLDSN
 }

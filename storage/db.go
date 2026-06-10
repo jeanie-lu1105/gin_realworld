@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"example.com/gin_realworld/config"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	gorm_mysql "gorm.io/driver/mysql"
@@ -12,8 +13,8 @@ var gormDb *gorm.DB
 
 func init() {
 	var err error
-	dsn := "root:12345678@tcp(127.0.0.1:3306)/gin_realworld-db?parseTime=true"
-	db, err = sqlx.Open("mysql", dsn)
+	//dsn := "root:12345678@tcp(127.0.0.1:3306)/gin_realworld_db?parseTime=true"
+	db, err = sqlx.Open("mysql", config.GetMySQLDSN())
 	if err != nil {
 		panic(err)
 	}

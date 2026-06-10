@@ -1,0 +1,47 @@
+version: '3.8'
+
+networks:
+  realworld-docker-compose-network:
+    driver: bridge
+
+services:
+  mysql:
+    container_name: realworld-docker-compose-mysql
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_DATABASE: gin_realworld_db
+    networks:
+      - realworld-docker-compose-network
+    expose:
+      - "3306"
+    volumes:
+      - realworld-mysql-data:/var/lib/mysql
+  redis:
+    container_name: realworld-docker-compose-redis
+    image: redis:latest
+    networks:
+      - realworld-docker-compose-network
+    expose:
+      - "6379"
+  app:
+      container_name: realworld-docker-compose-api
+      build:
+        context: .
+        dockerfile: Dockerfile
+      ports:
+        - "8080:8080"
+      #      - "8081:8081"
+      working_dir: /app
+      command: ./gin_realworld
+      restart: always
+      depends_on:
+        mysql:
+          condition: service_started
+        redis:
+          condition: service_started
+      networks:
+        - realworld-docker-compose-network
+
+volumes:
+  realworld-mysql-data:

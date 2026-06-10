@@ -1,4 +1,5 @@
 secret: secret000
-privateKeyLocation: /Users/lujiaxin/GolandProjects/gin_realworld/private.pem
-publicKeyLocation: /Users/lujiaxin/GolandProjects/gin_realworld/public.pem
-redisAddr: localhost:6379
+privateKeyLocation: private.pem
+publicKeyLocation: public.pem
+redisAddr: 127.0.0.1:6379
+mysqlDSN: root:12345678@(127.0.0.1:3306)/gin_realworld-db?parseTime=true
