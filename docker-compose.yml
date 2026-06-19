@@ -1,21 +1,55 @@
-version: '3.8'
-
 networks:
   realworld-docker-compose-network:
     driver: bridge
 
 services:
+  backend:
+    container_name: realworld-docker-compose-backend
+    image: jessielu1105/gin_realworld_api:1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    #      - "8081:8081"
+    working_dir: /app
+    command: ./gin_realworld
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_started
+      redis:
+        condition: service_started
+    networks:
+      - realworld-docker-compose-network
+  frontend:
+    container_name: realworld-docker-compose-frontend
+    image: jessielu1105/gin_realworld_gui:1.0
+    ports:
+      - "80:80"
+    restart: always
+    networks:
+      - realworld-docker-compose-network
+    depends_on:
+      backend:
+        condition: service_started
+    environment:
+      - BASE_URL=/
+      - VITE_API_HOST=http://realworld-docker-compose-backend:8080
   mysql:
     container_name: realworld-docker-compose-mysql
     image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: 12345678
-      MYSQL_DATABASE: gin_realworld_db
+      MYSQL_DATABASE: realworld
     networks:
       - realworld-docker-compose-network
     expose:
       - "3306"
     volumes:
+      - ./data.sql:/docker-entrypoint-initdb.d/data.sql
+      #      - ./mysql-init-scripts:/docker-entrypoint-initdb.d
+      #      - ./mysql-data:/var/lib/mysql
       - realworld-mysql-data:/var/lib/mysql
   redis:
     container_name: realworld-docker-compose-redis
@@ -24,24 +58,6 @@ services:
       - realworld-docker-compose-network
     expose:
       - "6379"
-  app:
-      container_name: realworld-docker-compose-api
-      build:
-        context: .
-        dockerfile: Dockerfile
-      ports:
-        - "8080:8080"
-      #      - "8081:8081"
-      working_dir: /app
-      command: ./gin_realworld
-      restart: always
-      depends_on:
-        mysql:
-          condition: service_started
-        redis:
-          condition: service_started
-      networks:
-        - realworld-docker-compose-network
 
 volumes:
   realworld-mysql-data:

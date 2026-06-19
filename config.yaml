@@ -1,5 +1,5 @@
 secret: secret000
 privateKeyLocation: private.pem
 publicKeyLocation: public.pem
-redisAddr: 127.0.0.1:6379
-mysqlDSN: root:12345678@(127.0.0.1:3306)/gin_realworld-db?parseTime=true
+redisAddr: realworld-docker-compose-redis:6379
+mysqlDSN: root:12345678@(realworld-docker-compose-mysql:3306)/realworld?parseTime=true
