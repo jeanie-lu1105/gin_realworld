@@ -24,6 +24,13 @@ func init() {
 	viper.SetConfigType("yaml")
 	currentPath, _ := os.Getwd()
 	viper.AddConfigPath(currentPath)
+	if exePath, err := os.Executable(); err == nil {
+		viper.AddConfigPath(filepath.Dir(exePath))
+	}
+	os.Setenv("GO_GIN_PATH", "/Users/lujiaxin")
+	if gopath := os.Getenv("GO_GIN_PATH"); gopath != "" {
+		viper.AddConfigPath(filepath.Join(gopath, "GolandProjects", "gin_realworld"))
+	}
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(fmt.Errorf("fatal error config file: %w", err))

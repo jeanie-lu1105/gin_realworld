@@ -13,8 +13,9 @@ var gormDb *gorm.DB
 
 func init() {
 	var err error
-	//dsn := "root:12345678@tcp(127.0.0.1:3306)/gin_realworld_db?parseTime=true"
+	//dsn := "root:12345678@tcp(127.0.0.1:3307)/realworld?parseTime=true"
 	db, err = sqlx.Open("mysql", config.GetMySQLDSN())
+	//db, err = sqlx.Open("mysql", dsn)
 	if err != nil {
 		panic(err)
 	}
